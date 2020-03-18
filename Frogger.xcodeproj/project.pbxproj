@@ -15,6 +15,7 @@
 		4378625E241DBD89006C48F0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4378625C241DBD89006C48F0 /* Main.storyboard */; };
 		43786260241DBD8A006C48F0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4378625F241DBD8A006C48F0 /* Assets.xcassets */; };
 		43786263241DBD8A006C48F0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43786261241DBD8A006C48F0 /* LaunchScreen.storyboard */; };
+		4388492D2421C5E300148EE9 /* Tiles.sks in Resources */ = {isa = PBXBuildFile; fileRef = 4388492C2421C5E300148EE9 /* Tiles.sks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		4378625F241DBD8A006C48F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		43786262241DBD8A006C48F0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		43786264241DBD8A006C48F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4388492C2421C5E300148EE9 /* Tiles.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Tiles.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 				4378625F241DBD8A006C48F0 /* Assets.xcassets */,
 				43786261241DBD8A006C48F0 /* LaunchScreen.storyboard */,
 				43786264241DBD8A006C48F0 /* Info.plist */,
+				4388492C2421C5E300148EE9 /* Tiles.sks */,
 			);
 			path = Frogger;
 			sourceTree = "<group>";
@@ -134,6 +137,7 @@
 				4378625E241DBD89006C48F0 /* Main.storyboard in Resources */,
 				43786255241DBD89006C48F0 /* GameScene.sks in Resources */,
 				43786260241DBD8A006C48F0 /* Assets.xcassets in Resources */,
+				4388492D2421C5E300148EE9 /* Tiles.sks in Resources */,
 				43786263241DBD8A006C48F0 /* LaunchScreen.storyboard in Resources */,
 				43786257241DBD89006C48F0 /* Actions.sks in Resources */,
 			);
