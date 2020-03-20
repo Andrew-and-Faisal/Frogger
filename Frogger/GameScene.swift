@@ -75,6 +75,8 @@ class GameScene: SKScene {
     }
     
     func loadSceneNodes() {
+        scene?.scaleMode = SKSceneScaleMode.fill
+        
         guard let frog = childNode(withName: "frog") as? SKSpriteNode else {
             fatalError("Frog sprite not loaded")
         }
