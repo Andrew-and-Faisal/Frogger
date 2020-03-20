@@ -120,6 +120,9 @@ class GameScene: SKScene {
                                        rows: rows,
                                        tileSize: size)
         
+        print(objectsTileMap.position)
+        objectsTileMap.position = CGPoint(x: 620.636, y: 1339.089)
+        
         // 3
         addChild(objectsTileMap)
         
@@ -140,8 +143,8 @@ class GameScene: SKScene {
         // 7
         for _ in 1...numberOfObjects {
             // 8
-            let column = Int(arc4random_uniform(UInt32(columns)))
-            let row = Int(arc4random_uniform(UInt32(rows)))
+            let column = Int.random(in: 3...columns - 3)
+            let row = Int.random(in: 3...rows - 3)
             
             let grassTile = grassTileMap.tileDefinition(atColumn: column, row: row)
             let roadTile = roadTileMap.tileDefinition(atColumn: column, row: row)
