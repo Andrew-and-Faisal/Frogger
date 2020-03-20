@@ -10,86 +10,72 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
-  
-  // constants
-  let waterMaxSpeed: CGFloat = 200
-  let landMaxSpeed: CGFloat = 4000
-
-  // if within threshold range of the target, frog begins slowing
-  let targetThreshold:CGFloat = 200
-
-  var maxSpeed: CGFloat = 0
-  var acceleration: CGFloat = 0
-  
-  // touch location
-  var targetLocation: CGPoint = .zero
-  
-  // Scene Nodes
-  var frog:SKSpriteNode!
-
-  override func didMove(to view: SKView) {
-    loadSceneNodes()
-    physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
-    maxSpeed = landMaxSpeed
-  }
-  
-  func loadSceneNodes() {
-    guard let frog = childNode(withName: "frog") as? SKSpriteNode else {
-      fatalError("Sprite Nodes not loaded")
-    }
-    self.frog = frog
-  }
-  
-  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    guard let touch = touches.first else { return }
-    targetLocation = touch.location(in: self)
-  }
-  
-  override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-    guard let touch = touches.first else { return }
-    targetLocation = touch.location(in: self)
-  }
-  
-  
-  override func update(_ currentTime: TimeInterval) {
-  }
-  
-  override func didSimulatePhysics() {
     
-    let offset = CGPoint(x: targetLocation.x - frog.position.x,
-                         y: targetLocation.y - frog.position.y)
-    let distance = sqrt(offset.x * offset.x + offset.y * offset.y)
-    let frogDirection = CGPoint(x:offset.x / distance,
-                               y:offset.y / distance)
-    let frogVelocity = CGPoint(x: frogDirection.x * acceleration,
-                              y: frogDirection.y * acceleration)
+    // Constants
+    let tileSize = 128
     
-    frog.physicsBody?.velocity = CGVector(dx: frogVelocity.x, dy: frogVelocity.y)
+    // Scene Nodes
+    var frog: SKSpriteNode!
+    var grassBackground: SKTileMapNode!
     
-    if acceleration > 5 {
-      frog.zRotation = atan2(frogVelocity.y, frogVelocity.x)
+    override func didMove(to view: SKView) {
+        loadSceneNodes()
+        
+        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(GameScene.swipeRight(sender:)))
+        swipeRight.direction = .right
+        view.addGestureRecognizer(swipeRight)
+        
+        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(GameScene.swipeLeft(sender:)))
+        swipeLeft.direction = .left
+        view.addGestureRecognizer(swipeLeft)
+        
+        let swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(GameScene.swipeUp(sender:)))
+        swipeUp.direction = .up
+        view.addGestureRecognizer(swipeUp)
+        
+        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(GameScene.swipeDown(sender:)))
+        swipeDown.direction = .down
+        view.addGestureRecognizer(swipeDown)
     }
     
-    // update acceleration
-    // frog speeds up to maximum
-    // if within threshold range of the target, frog begins slowing
-    // if maxSpeed has reduced due to different tiles,
-    // may need to decelerate slowly to the new maxSpeed
-    
-    if distance < targetThreshold {
-      let delta = targetThreshold - distance
-      acceleration = acceleration * ((targetThreshold - delta)/targetThreshold)
-      if acceleration < 2 {
-        acceleration = 0
-      }
-    } else {
-      if acceleration > maxSpeed {
-        acceleration -= min(acceleration - maxSpeed, 80)
-      }
-      if acceleration < maxSpeed {
-        acceleration += min(maxSpeed - acceleration, 40)
-      }
+    @objc func swipeRight(sender: UISwipeGestureRecognizer) {
+        frog.zRotation = (3 * .pi) / 2
+        frog.position = CGPoint(x: frog.position.x + CGFloat(tileSize), y: frog.position.y)
     }
-
-  }
+    
+    @objc func swipeLeft(sender: UISwipeGestureRecognizer) {
+        frog.zRotation = .pi / 2
+        frog.position = CGPoint(x: frog.position.x - CGFloat(tileSize), y: frog.position.y)
+    }
+    
+    @objc func swipeUp(sender: UISwipeGestureRecognizer) {
+        frog.zRotation = 0
+        frog.position = CGPoint(x: frog.position.x, y: frog.position.y + CGFloat(tileSize))
+    }
+    
+    @objc func swipeDown(sender: UISwipeGestureRecognizer) {
+        frog.zRotation = .pi
+        frog.position = CGPoint(x: frog.position.x, y: frog.position.y - CGFloat(tileSize))
+    }
+    
+    func loadSceneNodes() {
+        guard let frog = childNode(withName: "frog") as? SKSpriteNode else {
+            fatalError("Frog sprite not loaded")
+        }
+        self.frog = frog
+        
+        guard let grassBackground = childNode(withName: "grassBackground") as? SKTileMapNode else {
+            fatalError("Background tile map node not loaded")
+        }
+        self.grassBackground = grassBackground
+        
+        // Boundary constraints
+        let xRange = SKRange(lowerLimit:0 + CGFloat(tileSize), upperLimit:scene!.size.width - CGFloat(tileSize))
+        let yRange = SKRange(lowerLimit:0 + CGFloat(tileSize), upperLimit:scene!.size.height - CGFloat(tileSize))
+        frog.constraints = [SKConstraint.positionX(xRange,y: yRange)]
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+        // empty
+    }
 }
