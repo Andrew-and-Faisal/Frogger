@@ -9,7 +9,34 @@
 import SpriteKit
 import GameplayKit
 
+
+
 class GameScene: SKScene {
+    
+    //MARK: Frogger Health SKSpriteNode
+    private var heartZero: SKSpriteNode!
+    private var heartOne: SKSpriteNode!
+    private var heartTwo: SKSpriteNode!
+    
+    
+    var heartCounter: Int = 3 {
+        didSet {
+            if heartCounter >= 0 && heartCounter <= 3 {
+                switch heartCounter {
+                case 0:
+                    self.heartEmpty(heartZero)
+                case 1:
+                    self.heartEmpty(heartOne)
+                case 2:
+                    self.heartEmpty(heartOne)
+                default:
+                    return
+                }
+            }
+        }
+    }
+    
+    //MARK: Cars Nodes SKPriteNodes
     
     // Constants
     let tileSize = 128
@@ -77,5 +104,19 @@ class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         // empty
+    }
+}
+
+
+//MARK: helper Method
+
+extension GameScene {
+    
+    func heartFilled(_ ndoe: SKSpriteNode) {
+        heartOne.texture = SKTexture(imageNamed: "heart-fill")
+    }
+    
+    func heartEmpty(_ ndoe: SKSpriteNode) {
+        heartOne.texture = SKTexture(imageNamed: "heart-empty")
     }
 }
