@@ -30,7 +30,7 @@ class EndGameScene: GameScene {
             guard let scoreLabel = self.childNode(withName: "scoreLabelNode") as? SKLabelNode else { fatalError()  }
             self.scoreLabelNode = scoreLabel
             print("game score in GameScoreScene value \(gameScore)")
-            scoreLabelNode.text = "\(gameScore)"
+            scoreLabelNode.text = "Score: \(gameScore)"
         }
     }
     
@@ -52,6 +52,7 @@ class EndGameScene: GameScene {
             let pos = touch.location(in: self)
             let node = self.atPoint(pos)
             if node == startNewGameButtonNode {
+                print("touch felt")
                 let transition = SKTransition.fade(withDuration: 1)
                 startGameScene = SKScene(fileNamed: "StartGameScene")
                 startGameScene.scaleMode = .aspectFit

@@ -55,8 +55,8 @@ class StartGameScene: GameScene {
                 
                 let currentX = self.startFrog.position.x
                 let currentY = self.startFrog.position.y
-                self.destX = currentX + CGFloat(data.acceleration.x * 1000)
-                self.destY = currentY + CGFloat(data.acceleration.y * 1000)
+                self.destX = currentX + CGFloat(data.acceleration.x * 5000)
+                self.destY = currentY + CGFloat(data.acceleration.y * 5000)
             }
         }
         
