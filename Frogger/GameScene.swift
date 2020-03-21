@@ -28,25 +28,18 @@ enum Car: Int {
 
 class GameScene: SKScene {
     
-    //MARK: Frogger Health SKSpriteNode
-    private var heartZero: SKSpriteNode!
-    private var heartOne: SKSpriteNode!
-    private var heartTwo: SKSpriteNode!
+    // MARK: Collision Categories
+    let frogCategory: UInt32 = 0x1 << 0
+    let carCategory: UInt32 = 0x1 << 1
+    let endGameTargetCategory: UInt32 = 0x1 << 2
     
+    //MARK: Frogger Health SKSpriteNode
+    private var frogHealth: [SKSpriteNode] = []
     
     var heartCounter: Int = 3 {
         didSet {
-            if heartCounter >= 0 && heartCounter <= 3 {
-                switch heartCounter {
-                case 0:
-                    self.heartEmpty(heartZero)
-                case 1:
-                    self.heartEmpty(heartOne)
-                case 2:
-                    self.heartEmpty(heartOne)
-                default:
-                    return
-                }
+            if heartCounter >= 0 {
+                heartEmpty(frogHealth[heartCounter])
             }
         }
     }
@@ -74,11 +67,15 @@ class GameScene: SKScene {
     
     
     override func didMove(to view: SKView) {
+        setupTheDelegate()
         loadSceneNodes()
         createGestures(view)
         carsMove()
-        
         setupObjects()
+    }
+    
+    func setupTheDelegate() {
+        self.physicsWorld.contactDelegate = self
     }
     
     @objc func swipeRight(sender: UISwipeGestureRecognizer) {
@@ -109,14 +106,11 @@ class GameScene: SKScene {
         }
     }
     
+    
     func loadSceneNodes() {
         scene?.scaleMode = SKSceneScaleMode.fill
-        
-        guard let frog = childNode(withName: "frog") as? SKSpriteNode else {
-            fatalError("Frog sprite not loaded")
-        }
-        self.frog = frog
-        
+        createFrog()
+
         guard let grassTileMap = childNode(withName: "grassTileMap") as? SKTileMapNode else {
             fatalError("grass tile map node not loaded")
         }
@@ -132,7 +126,6 @@ class GameScene: SKScene {
             fatalError("sand tile map node not loaded")
         }
         
-//        self.grassBackground = grassBackground
         self.sandTileMap = sandTileMap
         
         guard let waterTileMap = childNode(withName: "waterTileMap") as? SKTileMapNode else {
@@ -140,20 +133,50 @@ class GameScene: SKScene {
         }
         self.waterTileMap = waterTileMap
         
+        
+        getTrackeNodes()
+        setupFrogHealth()
+    }
+    
+    func setupFrogHealth() {
+        for i in 0...2 {
+            if let heartNode = self.childNode(withName: "heart\(i)") as? SKSpriteNode {
+                self.frogHealth.append(heartNode)
+            }
+        }
+    }
+    
+    func createFrog() {
+        guard let frog = childNode(withName: "frog") as? SKSpriteNode else {
+            fatalError("Frog sprite not loaded")
+        }
+        
+        self.frog = frog
+        // add physic collision
+        self.frog.physicsBody = SKPhysicsBody(circleOfRadius: self.frog.size.width / 2)
+        self.frog.physicsBody?.linearDamping = 0
+        self.frog.physicsBody?.categoryBitMask = frogCategory
+        self.frog.physicsBody?.collisionBitMask = 0
+        self.frog.physicsBody?.contactTestBitMask = carCategory | endGameTargetCategory
+        
         // Boundary constraints
         let xRange = SKRange(lowerLimit:0 + CGFloat(tileSize), upperLimit:scene!.size.width - CGFloat(tileSize))
         let yRange = SKRange(lowerLimit:0 + CGFloat(tileSize), upperLimit:scene!.size.height - CGFloat(tileSize))
         frog.constraints = [SKConstraint.positionX(xRange,y: yRange)]
-        
-        getTrackeNodes()
     }
-    
+
     fileprivate func createCar(_ car: Car, trackPosition: CGPoint) -> SKSpriteNode {
         let carNode = SKSpriteNode(imageNamed: car.value)
         carNode.name = "CAR"
         carNode.size = CGSize(width: carNode.size.width * 2, height: carNode.size.height * 2)
         carNode.zRotation = -(.pi / 2)
         carNode.position = CGPoint(x: 0  , y: trackPosition.y)
+        // add physic colission part.
+        carNode.physicsBody = SKPhysicsBody(circleOfRadius: carNode.size.width / 2)
+        carNode.physicsBody?.linearDamping = 0
+        carNode.physicsBody?.categoryBitMask = carCategory
+        carNode.physicsBody?.collisionBitMask = 0
+        carNode.physicsBody?.contactTestBitMask = frogCategory
         self.addChild(carNode)
         return carNode
     }
@@ -291,15 +314,59 @@ class GameScene: SKScene {
 }
 
 
-//MARK: helper Method
+extension GameScene: SKPhysicsContactDelegate {
+    func didBegin(_ contact: SKPhysicsContact) {
+        var frogBody:SKPhysicsBody
+        var hittedBody:SKPhysicsBody
+        
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            frogBody = contact.bodyA
+            hittedBody = contact.bodyB
+        }else{
+            frogBody = contact.bodyB
+            hittedBody = contact.bodyA
+        }
+        
+        if frogBody.categoryBitMask == frogCategory && hittedBody.categoryBitMask == carCategory {
+            frogHittedCar()
+            
+        } else if frogBody.categoryBitMask == frogCategory && hittedBody.categoryBitMask == endGameTargetCategory {
+            presentEndGameScene()
+        }
+    }
+    
+    func frogHittedCar() {
+        heartCounter = heartCounter - 1
+        if heartCounter == 0 {
+            //Note: End the game
+            return
+        }
+        let frogHideAction = SKAction.run {
+            self.frog.alpha = 0.0
+        }
+        let frogUnHideAction = SKAction.run {
+            self.frog.alpha = 1.0
+        }
+        
+        let waitAction = SKAction.wait(forDuration: 4.0)
+        
+        let finalAction = SKAction.repeat(SKAction.sequence([frogHideAction, frogUnHideAction, waitAction]), count: 10)
+        self.run(finalAction)
+    }
+    
+    func presentEndGameScene() {
+        
+    }
+}
 
+//MARK: helper Method
 extension GameScene {
     
     func heartFilled(_ ndoe: SKSpriteNode) {
-        heartOne.texture = SKTexture(imageNamed: "heart-fill")
+        ndoe.texture = SKTexture(imageNamed: "heart-fill")
     }
     
     func heartEmpty(_ ndoe: SKSpriteNode) {
-        heartOne.texture = SKTexture(imageNamed: "heart-empty")
+        ndoe.texture = SKTexture(imageNamed: "heart-empty")
     }
 }
