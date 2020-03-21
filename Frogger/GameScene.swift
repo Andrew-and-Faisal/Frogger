@@ -57,16 +57,28 @@ class GameScene: SKScene {
     
     // Constants
     let tileSize = 128
+    let rows = 22
+    let columns = 11
     
     // Scene Nodes
     var frog: SKSpriteNode!
-    var grassBackground: SKTileMapNode!
+    var grassTileMap: SKTileMapNode!
+    var roadTileMap: SKTileMapNode!
+    var sandTileMap: SKTileMapNode!
+    var waterTileMap: SKTileMapNode!
+    var objectsTileMap: SKTileMapNode!
+    
+    var jewelSound:SKAction = {
+        return SKAction.playSoundFileNamed("jewel.wav", waitForCompletion: false)
+    }()
     
     
     override func didMove(to view: SKView) {
         loadSceneNodes()
         createGestures(view)
         carsMove()
+        
+        setupObjects()
     }
     
     @objc func swipeRight(sender: UISwipeGestureRecognizer) {
@@ -98,16 +110,35 @@ class GameScene: SKScene {
     }
     
     func loadSceneNodes() {
+        scene?.scaleMode = SKSceneScaleMode.fill
+        
         guard let frog = childNode(withName: "frog") as? SKSpriteNode else {
             fatalError("Frog sprite not loaded")
         }
         self.frog = frog
         
-        guard let grassBackground = childNode(withName: "grassBackground") as? SKTileMapNode else {
-            fatalError("Background tile map node not loaded")
+        guard let grassTileMap = childNode(withName: "grassTileMap") as? SKTileMapNode else {
+            fatalError("grass tile map node not loaded")
         }
         
-        self.grassBackground = grassBackground
+        self.grassTileMap = grassTileMap
+        
+        guard let roadTileMap = childNode(withName: "roadTileMap") as? SKTileMapNode else {
+            fatalError("road tile map node not loaded")
+        }
+        self.roadTileMap = roadTileMap
+        
+        guard let sandTileMap = childNode(withName: "sandTileMap") as? SKTileMapNode else {
+            fatalError("sand tile map node not loaded")
+        }
+        
+//        self.grassBackground = grassBackground
+        self.sandTileMap = sandTileMap
+        
+        guard let waterTileMap = childNode(withName: "waterTileMap") as? SKTileMapNode else {
+            fatalError("water tile map node not loaded")
+        }
+        self.waterTileMap = waterTileMap
         
         // Boundary constraints
         let xRange = SKRange(lowerLimit:0 + CGFloat(tileSize), upperLimit:scene!.size.width - CGFloat(tileSize))
@@ -159,7 +190,95 @@ class GameScene: SKScene {
             }, SKAction.wait(forDuration: 2.0)])))
     }
     
+    func setupObjects() {
+        let size = CGSize(width: tileSize, height: tileSize)
+        
+        guard let tileSet = SKTileSet(named: "Object Tiles") else {
+            fatalError("Object Tiles Tile Set not found")
+        }
+        
+        objectsTileMap = SKTileMapNode(tileSet: tileSet,
+                                       columns: columns,
+                                       rows: rows,
+                                       tileSize: size)
+        
+        objectsTileMap.anchorPoint = CGPoint(x: 0, y: 0)
+        addChild(objectsTileMap)
+        
+        let tileGroups = tileSet.tileGroups
+        
+        guard let jewelTile = tileGroups.first(where: {$0.name == "Jewel"}) else {
+            fatalError("No Jewel tile definition found")
+        }
+        
+        let numberOfObjects = 10
+        
+        //        let maxObjectsOnGrass = numberOfObjects / 4
+        //        let maxObjectsOnWater = numberOfObjects / 4
+        //        let maxObjectsOnSand = numberOfObjects / 4
+        //        let maxObjectsOnRoad = numberOfObjects / 4
+        //
+        //        var objectsOnGrass = 0
+        //        var objectsOnWater = 0
+        //        var objectsOnSand = 0
+        //        var objectsOnRoad = 0
+        
+        for _ in 1...numberOfObjects {
+            let column = Int.random(in: 3...columns - 3)
+            let row = Int.random(in: 3...rows - 3)
+            
+            let grassTile = grassTileMap.tileDefinition(atColumn: column, row: row)
+            let roadTile = roadTileMap.tileDefinition(atColumn: column, row: row)
+            let sandTile = sandTileMap.tileDefinition(atColumn: column, row: row)
+            let waterTile = waterTileMap.tileDefinition(atColumn: column, row: row)
+            
+            var tile : SKTileGroup?
+            
+            while tile == nil {
+                let randNum = Int.random(in: 1...4)
+                
+                switch randNum {
+                case 1:
+                    tile = grassTile == nil ? jewelTile : nil
+                    break
+                case 2:
+                    tile = roadTile == nil ? jewelTile : nil
+                    break
+                case 3:
+                    tile = sandTile == nil ? jewelTile : nil
+                    break
+                case 4:
+                    tile = waterTile == nil ? jewelTile : nil
+                    break
+                default:
+                    print("Shouldn't be here...")
+                }
+            }
+            
+            objectsTileMap.setTileGroup(tile, forColumn: column, row: row)
+        }
+    }
+    
+    func debugPrint() {
+        let position = frog.position
+        let currentColumn = grassTileMap.tileColumnIndex(fromPosition: position)
+        let currentRow = grassTileMap.tileRowIndex(fromPosition: position)
+        
+        print("Current Column: \(currentColumn) Current Row: \(currentRow)")
+    }
+    
     override func update(_ currentTime: TimeInterval) {
+        let position = frog.position
+        let currentColumn = grassTileMap.tileColumnIndex(fromPosition: position)
+        let currentRow = grassTileMap.tileRowIndex(fromPosition: position)
+        
+        let objectTile = objectsTileMap.tileDefinition(atColumn: currentColumn, row: currentRow)
+        
+        if let _ = objectTile?.userData?.value(forKey: "jewel") {
+            run(jewelSound)
+            objectsTileMap.setTileGroup(nil, forColumn: currentColumn, row: currentRow)
+        }
+
     }
     
     func removeAllTheNodesOutsideTheScene(_ trackNode: SKSpriteNode) {
