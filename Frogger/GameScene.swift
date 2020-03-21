@@ -60,13 +60,19 @@ class GameScene: SKScene {
     let rows = 22
     let columns = 11
     
+    let jewelryPickupPoints = 100
+    
     // Scene Nodes
     var frog: SKSpriteNode!
+    var scoreLabel: SKLabelNode!
     var grassTileMap: SKTileMapNode!
     var roadTileMap: SKTileMapNode!
     var sandTileMap: SKTileMapNode!
     var waterTileMap: SKTileMapNode!
     var objectsTileMap: SKTileMapNode!
+    
+    // Game Variables
+    var score: Int!
     
     var jewelSound:SKAction = {
         return SKAction.playSoundFileNamed("jewel.wav", waitForCompletion: false)
@@ -79,6 +85,8 @@ class GameScene: SKScene {
         carsMove()
         
         setupObjects()
+        score = 0
+        updateScore(scoreDelta: 0)
     }
     
     @objc func swipeRight(sender: UISwipeGestureRecognizer) {
@@ -116,6 +124,11 @@ class GameScene: SKScene {
             fatalError("Frog sprite not loaded")
         }
         self.frog = frog
+        
+        guard let scoreLabel = childNode(withName: "score") as? SKLabelNode else {
+            fatalError("Score label not loaded")
+        }
+        self.scoreLabel = scoreLabel
         
         guard let grassTileMap = childNode(withName: "grassTileMap") as? SKTileMapNode else {
             fatalError("grass tile map node not loaded")
@@ -275,6 +288,7 @@ class GameScene: SKScene {
         let objectTile = objectsTileMap.tileDefinition(atColumn: currentColumn, row: currentRow)
         
         if let _ = objectTile?.userData?.value(forKey: "jewel") {
+            updateScore(scoreDelta: jewelryPickupPoints)
             run(jewelSound)
             objectsTileMap.setTileGroup(nil, forColumn: currentColumn, row: currentRow)
         }
@@ -287,6 +301,11 @@ class GameScene: SKScene {
                 node.removeFromParent()
             }
         }
+    }
+    
+    func updateScore(scoreDelta: Int){
+        score += scoreDelta
+        scoreLabel.text = String(score)
     }
 }
 
