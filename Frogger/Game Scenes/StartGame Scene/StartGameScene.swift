@@ -41,7 +41,6 @@ class StartGameScene: GameScene {
                 self.view?.presentScene(gameScene, transition: transition)
             }
         }
-
     }
 }
 
