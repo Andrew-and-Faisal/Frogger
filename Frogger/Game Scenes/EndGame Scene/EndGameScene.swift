@@ -15,7 +15,7 @@ class EndGameScene: GameScene {
     var startNewGameButtonNode: SKSpriteNode!
     var scoreLabelNode: SKLabelNode!
     var messgeTitleLabelNode: SKLabelNode!
-    var startGameScene:SKScene!
+    var startGameScene : SKScene!
     
     var messageTitle: String = "" {
         didSet {
