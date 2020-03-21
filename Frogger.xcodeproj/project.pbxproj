@@ -18,6 +18,7 @@
 		43786263241DBD8A006C48F0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43786261241DBD8A006C48F0 /* LaunchScreen.storyboard */; };
 		4388492D2421C5E300148EE9 /* BackgroundTiles.sks in Resources */ = {isa = PBXBuildFile; fileRef = 4388492C2421C5E300148EE9 /* BackgroundTiles.sks */; };
 		43BF8DA224258D8E00AC66BE /* jewel.wav in Resources */ = {isa = PBXBuildFile; fileRef = 43BF8DA124258D8E00AC66BE /* jewel.wav */; };
+		43C040832425B47500F9E303 /* ow.wav in Resources */ = {isa = PBXBuildFile; fileRef = 43C040822425B47500F9E303 /* ow.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		43786264241DBD8A006C48F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4388492C2421C5E300148EE9 /* BackgroundTiles.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = BackgroundTiles.sks; sourceTree = "<group>"; };
 		43BF8DA124258D8E00AC66BE /* jewel.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = jewel.wav; sourceTree = "<group>"; };
+		43C040822425B47500F9E303 /* ow.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ow.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +80,7 @@
 				43786261241DBD8A006C48F0 /* LaunchScreen.storyboard */,
 				43786264241DBD8A006C48F0 /* Info.plist */,
 				43BF8DA124258D8E00AC66BE /* jewel.wav */,
+				43C040822425B47500F9E303 /* ow.wav */,
 			);
 			path = Frogger;
 			sourceTree = "<group>";
@@ -140,6 +143,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43C040832425B47500F9E303 /* ow.wav in Resources */,
 				431F1977242476AD005D6003 /* ObjectTiles.sks in Resources */,
 				4378625E241DBD89006C48F0 /* Main.storyboard in Resources */,
 				43786255241DBD89006C48F0 /* GameScene.sks in Resources */,
