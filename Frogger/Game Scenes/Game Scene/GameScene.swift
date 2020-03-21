@@ -374,7 +374,6 @@ extension GameScene: SKPhysicsContactDelegate {
             frogHitCarAnimationFeedback()
             
         } else if frogBody.categoryBitMask == frogCategory && hittedBody.categoryBitMask == endGameTargetCategory {
-            print("hello world")
             presentEndGameScene(score: self.score, message: "Congratulations!")
         }
     }
@@ -403,10 +402,10 @@ extension GameScene: SKPhysicsContactDelegate {
         let transition = SKTransition.fade(withDuration: 1)
         let endGameScene: EndGameScene = SKScene(fileNamed: "EndGameScene") as! EndGameScene
         endGameScene.scaleMode = .aspectFit
-        endGameScene.score = score
+        endGameScene.gameScore = score
+        print("endGameScore \(score)")
         endGameScene.messageTitle = message
         self.view?.presentScene(endGameScene, transition: transition)
-
     }
 }
 
