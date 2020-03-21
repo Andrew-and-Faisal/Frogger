@@ -356,7 +356,7 @@ extension GameScene: SKPhysicsContactDelegate {
             frogHitCarAnimationFeedback()
             
         } else if frogBody.categoryBitMask == frogCategory && hittedBody.categoryBitMask == endGameTargetCategory {
-            presentEndGameScene()
+            presentEndGameScene(score: self.score, message: "Congratulation")
         }
     }
     
@@ -364,7 +364,7 @@ extension GameScene: SKPhysicsContactDelegate {
         run(owSound)
         heartCounter = heartCounter - 1
         if heartCounter == 0 {
-            //Note: End the game
+            presentEndGameScene(score: self.score, message: "Sorry, you can try again")
             return
         }
         let frogHideAction = SKAction.run {
@@ -380,8 +380,14 @@ extension GameScene: SKPhysicsContactDelegate {
         self.run(finalAction)
     }
     
-    func presentEndGameScene() {
-        
+    func presentEndGameScene(score: Int, message: String) {
+        let transition = SKTransition.fade(withDuration: 1)
+        let endGameScene: EndGameScene = SKScene(fileNamed: "EndGameScene") as! EndGameScene
+        endGameScene.scaleMode = .aspectFit
+        endGameScene.score = score
+        endGameScene.messageTitle = message
+        self.view?.presentScene(endGameScene, transition: transition)
+
     }
 }
 
