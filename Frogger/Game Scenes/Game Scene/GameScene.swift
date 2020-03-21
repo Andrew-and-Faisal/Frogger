@@ -48,6 +48,10 @@ class GameScene: SKScene {
     private var trackNodes: [SKSpriteNode] = []
     private var currentTrack: Int = 0
     
+    
+    //MARK: Cars Nodes SKPriteNodes
+    private var endGameTarget: SKSpriteNode!
+    
     // Constants
     let tileSize = 128
     let rows = 22
@@ -122,7 +126,9 @@ class GameScene: SKScene {
     func loadSceneNodes() {
         scene?.scaleMode = SKSceneScaleMode.fill
         createFrog()
-
+        createEndGameTargetNode()
+        getTrackeNodes()
+        setupFrogHealth()
         
         guard let scoreLabel = childNode(withName: "score") as? SKLabelNode else {
             fatalError("Score label not loaded")
@@ -152,9 +158,19 @@ class GameScene: SKScene {
         }
         self.waterTileMap = waterTileMap
         
-        
-        getTrackeNodes()
-        setupFrogHealth()
+    }
+    
+    func createEndGameTargetNode () {
+        guard let endGameTargetNode = childNode(withName: "endGameTargetNode") as? SKSpriteNode else {
+            fatalError("endGameTargetNode is not loaded")
+        }
+        self.endGameTarget = endGameTargetNode
+        self.endGameTarget.physicsBody = SKPhysicsBody(circleOfRadius: endGameTarget.size.width / 2)
+        self.endGameTarget.physicsBody?.linearDamping = 0
+        self.endGameTarget.physicsBody?.categoryBitMask = endGameTargetCategory
+        self.endGameTarget.physicsBody?.collisionBitMask = 0
+        self.endGameTarget.physicsBody?.contactTestBitMask = frogCategory
+
     }
     
     func setupFrogHealth() {
@@ -356,6 +372,7 @@ extension GameScene: SKPhysicsContactDelegate {
             frogHitCarAnimationFeedback()
             
         } else if frogBody.categoryBitMask == frogCategory && hittedBody.categoryBitMask == endGameTargetCategory {
+            print("hello world")
             presentEndGameScene(score: self.score, message: "Congratulations!")
         }
     }
