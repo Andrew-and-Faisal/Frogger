@@ -53,13 +53,19 @@ class GameScene: SKScene {
     let rows = 22
     let columns = 11
     
+    let jewelryPickupPoints = 100
+    
     // Scene Nodes
     var frog: SKSpriteNode!
+    var scoreLabel: SKLabelNode!
     var grassTileMap: SKTileMapNode!
     var roadTileMap: SKTileMapNode!
     var sandTileMap: SKTileMapNode!
     var waterTileMap: SKTileMapNode!
     var objectsTileMap: SKTileMapNode!
+    
+    // Game Variables
+    var score: Int!
     
     var jewelSound:SKAction = {
         return SKAction.playSoundFileNamed("jewel.wav", waitForCompletion: false)
@@ -72,6 +78,8 @@ class GameScene: SKScene {
         createGestures(view)
         carsMove()
         setupObjects()
+        score = 0
+        updateScore(scoreDelta: 0)
     }
     
     func setupTheDelegate() {
@@ -111,6 +119,13 @@ class GameScene: SKScene {
         scene?.scaleMode = SKSceneScaleMode.fill
         createFrog()
 
+        
+        guard let scoreLabel = childNode(withName: "score") as? SKLabelNode else {
+            fatalError("Score label not loaded")
+        }
+        
+        self.scoreLabel = scoreLabel
+        
         guard let grassTileMap = childNode(withName: "grassTileMap") as? SKTileMapNode else {
             fatalError("grass tile map node not loaded")
         }
@@ -298,6 +313,7 @@ class GameScene: SKScene {
         let objectTile = objectsTileMap.tileDefinition(atColumn: currentColumn, row: currentRow)
         
         if let _ = objectTile?.userData?.value(forKey: "jewel") {
+            updateScore(scoreDelta: jewelryPickupPoints)
             run(jewelSound)
             objectsTileMap.setTileGroup(nil, forColumn: currentColumn, row: currentRow)
         }
@@ -310,6 +326,11 @@ class GameScene: SKScene {
                 node.removeFromParent()
             }
         }
+    }
+    
+    func updateScore(scoreDelta: Int){
+        score += scoreDelta
+        scoreLabel.text = String(score)
     }
 }
 
@@ -328,14 +349,14 @@ extension GameScene: SKPhysicsContactDelegate {
         }
         
         if frogBody.categoryBitMask == frogCategory && hittedBody.categoryBitMask == carCategory {
-            frogHittedCar()
+            frogHitCarAnimationFeedback()
             
         } else if frogBody.categoryBitMask == frogCategory && hittedBody.categoryBitMask == endGameTargetCategory {
             presentEndGameScene()
         }
     }
     
-    func frogHittedCar() {
+    func frogHitCarAnimationFeedback() {
         heartCounter = heartCounter - 1
         if heartCounter == 0 {
             //Note: End the game
