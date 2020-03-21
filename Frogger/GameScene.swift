@@ -71,6 +71,10 @@ class GameScene: SKScene {
         return SKAction.playSoundFileNamed("jewel.wav", waitForCompletion: false)
     }()
     
+    var owSound:SKAction = {
+        return SKAction.playSoundFileNamed("ow.wav", waitForCompletion: false)
+    }()
+    
     
     override func didMove(to view: SKView) {
         setupTheDelegate()
@@ -357,6 +361,7 @@ extension GameScene: SKPhysicsContactDelegate {
     }
     
     func frogHitCarAnimationFeedback() {
+        run(owSound)
         heartCounter = heartCounter - 1
         if heartCounter == 0 {
             //Note: End the game
