@@ -24,6 +24,10 @@ class GameScene: SKScene {
     var waterTileMap: SKTileMapNode!
     var objectsTileMap: SKTileMapNode!
     
+    var jewelSound:SKAction = {
+        return SKAction.playSoundFileNamed("jewel.wav", waitForCompletion: false)
+    }()
+    
     override func didMove(to view: SKView) {
         loadSceneNodes()
         
@@ -49,29 +53,25 @@ class GameScene: SKScene {
     @objc func swipeRight(sender: UISwipeGestureRecognizer) {
         frog.zRotation = (3 * .pi) / 2
         frog.position = CGPoint(x: frog.position.x + CGFloat(tileSize), y: frog.position.y)
-        
-        debugPrint()
+//        debugPrint()
     }
     
     @objc func swipeLeft(sender: UISwipeGestureRecognizer) {
         frog.zRotation = .pi / 2
         frog.position = CGPoint(x: frog.position.x - CGFloat(tileSize), y: frog.position.y)
-        
-        debugPrint()
+//        debugPrint()
     }
     
     @objc func swipeUp(sender: UISwipeGestureRecognizer) {
         frog.zRotation = 0
         frog.position = CGPoint(x: frog.position.x, y: frog.position.y + CGFloat(tileSize))
-        
-        debugPrint()
+//         debugPrint()
     }
     
     @objc func swipeDown(sender: UISwipeGestureRecognizer) {
         frog.zRotation = .pi
         frog.position = CGPoint(x: frog.position.x, y: frog.position.y - CGFloat(tileSize))
-        
-        debugPrint()
+//        sdebugPrint()
     }
     
     func loadSceneNodes() {
@@ -98,9 +98,9 @@ class GameScene: SKScene {
         self.sandTileMap = sandTileMap
         
         guard let waterTileMap = childNode(withName: "waterTileMap") as? SKTileMapNode else {
-             fatalError("water tile map node not loaded")
-         }
-         self.waterTileMap = waterTileMap
+            fatalError("water tile map node not loaded")
+        }
+        self.waterTileMap = waterTileMap
         
         // Boundary constraints
         let xRange = SKRange(lowerLimit:0 + CGFloat(tileSize), upperLimit:scene!.size.width - CGFloat(tileSize))
@@ -111,40 +111,37 @@ class GameScene: SKScene {
     func setupObjects() {
         let size = CGSize(width: tileSize, height: tileSize)
         
-        // 1
         guard let tileSet = SKTileSet(named: "Object Tiles") else {
             fatalError("Object Tiles Tile Set not found")
         }
         
-        // 2
         objectsTileMap = SKTileMapNode(tileSet: tileSet,
                                        columns: columns,
                                        rows: rows,
                                        tileSize: size)
         
-        print(objectsTileMap.position)
-        objectsTileMap.position = CGPoint(x: 620.636, y: 1339.089)
-        
-        // 3
+        objectsTileMap.anchorPoint = CGPoint(x: 0, y: 0)
         addChild(objectsTileMap)
         
-        // 4
         let tileGroups = tileSet.tileGroups
         
-        // 5
-        guard let duckTile = tileGroups.first(where: {$0.name == "Duck"}) else {
-            fatalError("No Duck tile definition found")
+        guard let jewelTile = tileGroups.first(where: {$0.name == "Jewel"}) else {
+            fatalError("No Jewel tile definition found")
         }
-        //        guard let gascanTile = tileGroups.first(where: {$0.name == "Gas Can"}) else {
-        //            fatalError("No Gas Can tile definition found")
-        //        }
         
-        // 6
         let numberOfObjects = 10
         
-        // 7
+        //        let maxObjectsOnGrass = numberOfObjects / 4
+        //        let maxObjectsOnWater = numberOfObjects / 4
+        //        let maxObjectsOnSand = numberOfObjects / 4
+        //        let maxObjectsOnRoad = numberOfObjects / 4
+        //
+        //        var objectsOnGrass = 0
+        //        var objectsOnWater = 0
+        //        var objectsOnSand = 0
+        //        var objectsOnRoad = 0
+        
         for _ in 1...numberOfObjects {
-            // 8
             let column = Int.random(in: 3...columns - 3)
             let row = Int.random(in: 3...rows - 3)
             
@@ -153,7 +150,6 @@ class GameScene: SKScene {
             let sandTile = sandTileMap.tileDefinition(atColumn: column, row: row)
             let waterTile = waterTileMap.tileDefinition(atColumn: column, row: row)
             
-            // 9
             var tile : SKTileGroup?
             
             while tile == nil {
@@ -161,32 +157,22 @@ class GameScene: SKScene {
                 
                 switch randNum {
                 case 1:
-                    tile = grassTile == nil ? duckTile : nil
+                    tile = grassTile == nil ? jewelTile : nil
                     break
                 case 2:
-                    tile = roadTile == nil ? duckTile : nil
+                    tile = roadTile == nil ? jewelTile : nil
                     break
                 case 3:
-                    tile = sandTile == nil ? duckTile : nil
+                    tile = sandTile == nil ? jewelTile : nil
                     break
                 case 4:
-                    tile = waterTile == nil ? duckTile : nil
+                    tile = waterTile == nil ? jewelTile : nil
                     break
                 default:
                     print("Shouldn't be here...")
                 }
             }
             
-            print("Column: \(column) Row: \(row)")
-            
-            if tile != nil {
-                print("duck")
-            }
-            else {
-                print("not duck")
-            }
-            
-            // 10
             objectsTileMap.setTileGroup(tile, forColumn: column, row: row)
         }
     }
@@ -205,10 +191,12 @@ class GameScene: SKScene {
         let currentRow = grassTileMap.tileRowIndex(fromPosition: position)
         
         let objectTile = objectsTileMap.tileDefinition(atColumn: currentColumn, row: currentRow)
-
-            
-        if let _ = objectTile?.userData?.value(forKey: "duck") {
-          objectsTileMap.setTileGroup(nil, forColumn: currentColumn, row: currentRow)
+        
+        if let _ = objectTile?.userData?.value(forKey: "jewel") {
+            run(jewelSound)
+            objectsTileMap.setTileGroup(nil, forColumn: currentColumn, row: currentRow)
         }
+        
+        
     }
 }
