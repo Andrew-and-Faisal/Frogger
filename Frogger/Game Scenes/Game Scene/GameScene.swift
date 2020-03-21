@@ -253,6 +253,8 @@ class GameScene: SKScene {
             fatalError("No Jewel tile definition found")
         }
         
+        
+        
         let numberOfObjects = 10
         
         //        let maxObjectsOnGrass = numberOfObjects / 4
